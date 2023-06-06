@@ -1,0 +1,164 @@
+#include <LiquidCrystal.h>
+extern volatile unsigned long timer0_millis;
+unsigned long ilumDiaria = 0;
+int tempMin = 0;
+int tempMax = 0;
+int quantAgua = 0;
+int tempoBomba = 0;
+const int LDR = A5;
+const int temp = A4;
+const int sensPH = A3;
+const int sensUmid = A2;
+const int bomba = 11;
+const int ilum = 10;
+const int ventil = 9;
+
+
+int dia = 0;
+int tempoAtual = 0;
+int estadoAnterior = 0;
+
+LiquidCrystal lcd_1(7, 6, 5, 4, 3, 2);
+
+void setup()
+{
+  // Defina a quantidade de horas de iluminação necessária para a planta:
+  ilumDiaria = 5;
+  //ilumDiaria = ilumDiaria * 3600000;
+  
+  //Defina a temperatura ideal máxima para o crescimento da planta
+  tempMax = 30;
+  
+  //Defina a temperatura ideal mínima para o crescimento da planta
+  tempMin = 20;
+  
+  //Defina a quantidade de água a ser bombeada a cada certo período (em Litros) :
+  //quantAgua = 20;
+  
+  //Supondo que a bomba utilizada tem uma capacidade de bombear 10m³/h
+  //tempoBomba = (quantAgua * 3600000)/10000;
+  
+  //teste
+  ilumDiaria = 10000;
+    
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LDR, INPUT);
+  pinMode(temp, INPUT);
+  pinMode(sensPH, INPUT);
+  pinMode(sensUmid, INPUT);
+  pinMode(bomba, OUTPUT);
+  pinMode(ilum, OUTPUT); 
+  pinMode(ventil, OUTPUT);
+  
+  pinMode(temp, INPUT);
+  Serial.begin(9600);
+
+  lcd_1.begin(16, 2);
+  lcd_1.print("Inicializando...");
+  delay(2000);
+  lcd_1.clear();
+}
+
+void loop()
+{
+  float volts = analogRead(temp) * (5.0 / 1023.0);
+  float tempCelsius = (volts - 0.5) * 100;
+  
+  if(millis() >= 15000)
+  {
+    //ilumDiaria = 0;
+    dia = dia + 1;
+    noInterrupts ();
+    timer0_millis = 0;
+    interrupts ();
+  }
+  
+  if(tempCelsius > tempMax)
+  {
+    digitalWrite(ventil, HIGH);
+  }
+  else if(tempCelsius <= tempMin)
+  {
+    digitalWrite(ventil, LOW);
+  }
+  
+  if(millis() <= ilumDiaria)
+  {
+    digitalWrite(ilum, HIGH);
+  }
+  else
+  {
+    digitalWrite(ilum, LOW);
+  }
+  
+  if(analogRead(sensUmid) <= 438)
+  {
+    digitalWrite(bomba, HIGH);
+  }
+  else if(analogRead(sensUmid) >= 700)
+  {
+    digitalWrite(bomba, LOW);
+  }
+  
+  if(millis() < 5000)
+  {
+    if(digitalRead(bomba) == HIGH && estadoAnterior != 1)
+    {
+      lcd_1.clear();
+      lcd_1.print("Bomba LIGADA");
+      estadoAnterior = 1;
+      
+    }
+    else if(digitalRead(bomba) == LOW && estadoAnterior != 2)
+    {
+      lcd_1.clear();
+      lcd_1.print("Bomba DESLIGADA");
+      estadoAnterior = 2;
+    }
+  }
+  else if(millis() < 10000)
+  {
+    if(digitalRead(ventil) == HIGH && estadoAnterior != 3)
+    {
+      lcd_1.clear();
+      lcd_1.print("Ventilacao");
+      lcd_1.setCursor(0, 1);
+      lcd_1.print("LIGADA");
+      estadoAnterior = 3;
+      
+    }
+    else if(digitalRead(ventil) == LOW && estadoAnterior != 4)
+    {
+      lcd_1.clear();
+      lcd_1.print("Ventilacao");
+      lcd_1.setCursor(0, 1);
+      lcd_1.print("DESLIGADA");
+      estadoAnterior = 4;
+    }
+  }
+  else if(millis() < 15000)
+  {
+    if(digitalRead(ilum) == HIGH && estadoAnterior != 5)
+    {
+      lcd_1.clear();
+      lcd_1.print("Iluminacao");
+      lcd_1.setCursor(0, 1);
+      lcd_1.print("LIGADA");
+      estadoAnterior = 5;
+      
+    }
+    else if(digitalRead(ilum) == LOW && estadoAnterior != 6)
+    {
+      lcd_1.clear();
+      lcd_1.print("Iluminacao");
+      lcd_1.setCursor(0, 1);
+      lcd_1.print("DESLIGADA");
+      estadoAnterior = 6;
+    }
+  }
+ 
+
+  //Serial.println(dia);
+  //Serial.println(analogRead(sensUmid));
+}
+
