@@ -17,7 +17,10 @@ sobre a plantação.
 
 Integrantes:
 
-Matheus Haruo - RM97663
+Matheus Haruo - RM97663 
+
 Pedro Guerra - RM99526
+
 João Pedro Saborido - RM98184
+
 Victor Montenegro Borges - RM98708
