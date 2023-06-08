@@ -14,3 +14,10 @@ exemplo tempo de iluminação diário e temperaturas ideias para o plantio.
 Existe uma parte no código também que é possível modificá-la para alterar o funcionamento do bombeamento de água,
 ao invés de bombear água apenas quando necessário, é possível controlar um volume específico de água para ser esguichado
 sobre a plantação.
+
+Integrantes:
+
+Matheus Haruo - RM97663
+Pedro Guerra - RM99526
+João Pedro Saborido - RM98184
+Victor Montenegro Borges - RM98708
